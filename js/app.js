@@ -1,76 +1,96 @@
-(function ($) {
+var appDaily = {
+  baiduSearch: function (words) {
+    var key = 'site:' + window.location.host + '%20' + words.replace(/\s/g, '%20');
+    var url = 'https://www.baidu.com/baidu?tn=baidu&ie=utf-8&word=';
 
-  "use strict";
+    window.open(url + key, '_blank');
+  },
+  googleSearch: function (words) {
+    var key = 'site:' + window.location.host + '%20' + words.replace(/\s/g, '%20');
+    var url = 'https://www.google.com/search?q=';
 
-  var toggleActive = function (self, e) {
-    e.preventDefault();
-    if (self.hasClass("active") === true) {
-      self.removeClass("active");
+    window.open(url + key, '_blank');
+  },
+  submitSearch: function (search_engines) {
+    var $ipt = document.getElementById('homeSearchInput');
+
+    if (search_engines === 'baidu') {
+      this.baiduSearch($ipt.value.trim());
     } else {
-      self.addClass("active");
-    }
-  };
-
-  var switchSidebarTab = function (e) {
-    var self = $(this),
-      target = self.attr('data-toggle'),
-      counter_target = target === 'toc' ? 'bio' : 'toc';
-    if (self.hasClass('active')) {
-      return;
-    }
-    toggleActive(self, e);
-    toggleActive(self.siblings('.dark-btn'), e);
-    $('.site-' + counter_target).toggleClass('show');
-    setTimeout(function () {
-      $('.site-' + counter_target).hide();
-      $('.site-' + target).show();
-      setTimeout(function () {
-        $('.site-' + target).toggleClass('show');
-      }, 50);
-    }, 240);
-  };
-
-  var scrolltoElement = function (e) {
-    e.preventDefault();
-    var self = $(this),
-      correction = e.data ? e.data.correction ? e.data.correction : 0 : 0;
-    $('html, body').animate({'scrollTop': $(self.attr('href')).offset().top - correction}, 400);
-  };
-
-  var closeMenu = function (e) {
-    e.stopPropagation();
-    $('body').removeClass('menu-open');
-    $('#site-nav-switch').removeClass('active');
-  };
-
-  var toggleMenu = function (e) {
-    e.stopPropagation();
-    $('body').toggleClass('menu-open');
-    $('#site-nav-switch').toggleClass('active');
-  };
-
-  var pixivArchiveStat = function () {
-    var vol = $(".article-entry ul").length;
-    var artistCount = $(".article-entry ul li").length;
-    $("#pixiv-vol").text(vol);
-    $("#pixiv-artist-count").text(artistCount);
-  };
-
-  $(function () {
-    $('#footer, #main').addClass('loaded');
-    $('#site-nav-switch').on('click', toggleMenu);
-    $('#site-wrapper .overlay, #sidebar-close').on('click', closeMenu);
-    $('.window-nav, .site-toc a').on('click', scrolltoElement);
-    $(".content .video-container").fitVids();
-    $('#site-sidebar .sidebar-switch .dark-btn').on('click', switchSidebarTab);
-
-    if (window.location.pathname === '/pixiv' || window.location.pathname === '/pixiv/') {
-      pixivArchiveStat();
+      this.googleSearch($ipt.value.trim());
     }
 
-    setTimeout(function () {
-      $('#loading-bar-wrapper').fadeOut(500);
-    }, 300);
-  });
+    return false; header
+  },
+};
 
-})(jQuery);
+var whetherChange = 0;
+var whetherChangeToTop = 0;
+var ticking = false;
+cover = 240
+
+window.onscroll = function () {
+  var howFar = document.documentElement.scrollTop || document.body.scrollTop;
+  if (howFar > cover & whetherChange == 0) {
+    $("#appbar-index").addClass("itp-appbar-color-pull-up");
+    whetherChange = 1;
+  };
+  if (howFar <= cover & whetherChange == 1) {
+    $("#appbar-index").removeClass("itp-appbar-color-pull-up");
+    whetherChange = 0;
+  }
+};
+
+/*
+
+$(".toc li").replaceWith(function () {
+  return "<li class='mdui-menu-item'>" + this.innerHTML + "</li>";
+});
+
+$(".toc-child li").replaceWith(function () {
+  return "<li class='mdui-menu-item'>" + this.innerHTML + "</li>";
+});
+
+$(".itp-post-toc ol").replaceWith(function () {
+  return "<ul class='mdui-menu mdui-menu-cascade itp-toc-menu' id='toc'>" + this.innerHTML + "</ul>";
+});
+
+*/
+
+$(".categories .archive-link23").replaceWith(function () {
+  return "<div class='mdui-chip'><span class='mdui-chip-title'>" + this.innerHTML + "</span></div>";
+});
+
+
+$("img").not('footer img,.drawer-img, .mdui-card-header-avatar,.itp-mag-content img,.itp-post-author-avatar img,.itp-post-gallery img,.nofancy').each(function () {
+  // $(this).attr("data-fancybox", "gallery"); 直接给img添加data-fancybox会导致点击图片后图片消失
+  var element = document.createElement("a");
+  $(element).attr("data-fancybox", "gallery");
+  $(element).attr("href", $(this).attr("src"));
+  $(this).wrap(element);
+})
+
+$(".itp-mag-content img").each(function () {
+  // $(this).attr("data-fancybox", "gallery"); 直接给img添加data-fancybox会导致点击图片后图片消失
+  var element = document.createElement("div");
+  $(element).attr("class", "itp-mag-img");
+  $(this).wrap(element);
+})
+
+$('[data-fancybox="gallery"]').fancybox({
+  buttons: [
+    "close",
+  ],
+  baseTpl:
+    '<div class="fancybox-container" role="dialog" tabindex="-1">' +
+    '<div class="fancybox-bg"></div>' +
+    '<div class="fancybox-inner">' +
+    '<div class="fancybox-infobar">' +
+    '<span data-fancybox-index></span>&nbsp;/&nbsp;<span data-fancybox-count></span>' +
+    '</div>' +
+    '<div class="fancybox-toolbar">{{buttons}}</div>' +
+    '<div class="fancybox-navigation">{{arrows}}</div>' +
+    '<div class="fancybox-stage"></div>' +
+    '</div>' +
+    '</div>',
+});
